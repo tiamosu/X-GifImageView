@@ -18,8 +18,10 @@ public class GifImageView extends ImageView implements Runnable {
     private boolean mRenderFrame;
     private boolean mShouldClear;
     private Thread mAnimationThread;
-    private OnFrameAvailable mOnFrameAvailable = null;
     private long mFramesDisplayDuration = -1L;
+    private boolean mIsLoadOnlyOnce;
+
+    private OnFrameAvailable mOnFrameAvailable = null;
     private OnAnimationStop mOnAnimationStop = null;
     private OnAnimationStart mOnAnimationStart = null;
 
@@ -51,7 +53,13 @@ public class GifImageView extends ImageView implements Runnable {
     }
 
     public void setBytes(final byte[] bytes) {
+        setBytes(bytes, false);
+    }
+
+    public void setBytes(final byte[] bytes, boolean isLoadOnlyOnce) {
         mGifDecoder = new GifDecoder();
+        mIsLoadOnlyOnce = isLoadOnlyOnce;
+
         try {
             mGifDecoder.read(bytes);
         } catch (final Exception e) {
@@ -150,6 +158,7 @@ public class GifImageView extends ImageView implements Runnable {
             mOnAnimationStart.onAnimationStart();
         }
 
+        int frameCount = mGifDecoder.getFrameCount();
         do {
             if (!mAnimating && !mRenderFrame) {
                 break;
@@ -186,6 +195,12 @@ public class GifImageView extends ImageView implements Runnable {
                 }
             } catch (final InterruptedException e) {
                 // suppress exception
+            }
+            if (isAnimating() && mIsLoadOnlyOnce) {
+                frameCount--;
+                if (frameCount < 0) {
+                    mAnimating = false;
+                }
             }
         } while (mAnimating);
 

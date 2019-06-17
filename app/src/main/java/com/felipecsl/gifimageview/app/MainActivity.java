@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnBlur.setOnClickListener(this);
 
         final InputStream is = getResources().openRawResource(R.raw.gif);
-        mGifImageView.setBytes(ConvertUtils.inputStream2Bytes(is));
+        mGifImageView.setBytes(ConvertUtils.inputStream2Bytes(is), true);
         mGifImageView.startAnimation();
         Log.d(TAG, "GIF width is " + mGifImageView.getGifWidth());
         Log.d(TAG, "GIF height is " + mGifImageView.getGifHeight());
