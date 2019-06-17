@@ -2,8 +2,7 @@
 
 Android ImageView that handles Animated GIF images
 
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GifImageView-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1339)
-[![Build Status](https://travis-ci.org/felipecsl/GifImageView.svg?branch=master)](https://travis-ci.org/felipecsl/GifImageView)
+[ ![Download](https://api.bintray.com/packages/weixia/maven/X-gifimageview/images/download.svg) ](https://bintray.com/weixia/maven/X-gifimageview/_latestVersion)
 
 ### Usage
 
@@ -11,7 +10,7 @@ In your ``build.gradle`` file:
 
 ```groovy
 dependencies {
-  compile 'com.felipecsl:gifimageview:2.2.0'
+  compile 'me.xia:X-gifimageview:1.0.0'
 }
 ```
 
@@ -22,6 +21,8 @@ In your `Activity` class:
   super.onCreate(savedInstanceState);
   gifView = findViewById(R.id.gifImageView);
   gifView.setBytes(bitmapData);
+  //or
+  //gifView.setBytes(bitmapData,true);//is only load once
 }
 
 @Override protected void onStart() {
