@@ -1,26 +1,34 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
-  repositories {
-    jcenter()
-    google()
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.2'
-  }
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+    }
 }
 
 allprojects {
-  repositories {
-    jcenter()
-    google()
-  }
+    repositories {
+        jcenter()
+        google()
+    }
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
-  }
+}
+
+ext {
+    compile_sdk_version = 28
+    min_sdk_version = 15
+    target_sdk_version = 28
+    version_code = 1
+    version_name = '1.0'
 }

@@ -1,20 +1,19 @@
 apply plugin: 'com.android.library'
-apply from: 'gradle-mvn-push.gradle'
 
 android {
-  compileSdkVersion 27
-  buildToolsVersion "27.0.3"
-
-  defaultConfig {
-    minSdkVersion 14
-  }
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
-  }
+    compileSdkVersion compile_sdk_version
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode version_code
+        versionName version_name
+    }
+    lintOptions {
+        abortOnError false
+        ignoreWarnings true
+    }
 }
 
 dependencies {
-  implementation 'com.android.support:support-annotations:27.1.1'
+    compileOnly 'androidx.annotation:annotation:1.1.0'
 }
