@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnClear.setOnClickListener(this);
         mBtnBlur.setOnClickListener(this);
 
-        final InputStream is = getResources().openRawResource(R.raw.gif);
+        final InputStream is = getResources().openRawResource(R.raw.bg_lhj_yg_move);
         mGifImageView.setBytes(ConvertUtils.inputStream2Bytes(is), true);
         mGifImageView.startAnimation();
         Log.d(TAG, "GIF width is " + mGifImageView.getGifWidth());

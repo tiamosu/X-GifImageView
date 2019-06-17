@@ -198,8 +198,9 @@ public class GifImageView extends ImageView implements Runnable {
             }
             if (isAnimating() && mIsLoadOnlyOnce) {
                 frameCount--;
-                if (frameCount < 0) {
-                    mAnimating = false;
+                if (frameCount <= 0) {
+                    stopAnimation();
+                    resetAnimation();
                 }
             }
         } while (mAnimating);
