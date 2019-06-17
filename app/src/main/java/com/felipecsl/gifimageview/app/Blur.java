@@ -12,39 +12,41 @@ import androidx.renderscript.ScriptIntrinsicBlur;
 public class Blur {
     private static final float BLUR_RADIUS = 25f;
 
-    private final RenderScript rs;
-    private ScriptIntrinsicBlur script;
-    private Allocation input;
-    private Allocation output;
-    private boolean configured = false;
-    private Bitmap tmp;
-    private int[] pixels;
+    private final RenderScript mRenderScript;
+    private ScriptIntrinsicBlur mScript;
+    private Allocation mInput;
+    private Allocation mOutput;
+    private boolean mConfigured = false;
+    private Bitmap mTmp;
+    private int[] mPixels;
 
     public static Blur newInstance(Context context) {
         return new Blur(context);
     }
 
     private Blur(Context context) {
-        rs = RenderScript.create(context);
+        mRenderScript = RenderScript.create(context);
     }
 
     public Bitmap blur(Bitmap image) {
-        if (image == null)
+        if (image == null) {
             return null;
+        }
 
         image = RGB565toARGB888(image);
-        if (!configured) {
-            input = Allocation.createFromBitmap(rs, image);
-            output = Allocation.createTyped(rs, input.getType());
-            script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            script.setRadius(BLUR_RADIUS);
-            configured = true;
-        } else
-            input.copyFrom(image);
+        if (!mConfigured) {
+            mInput = Allocation.createFromBitmap(mRenderScript, image);
+            mOutput = Allocation.createTyped(mRenderScript, mInput.getType());
+            mScript = ScriptIntrinsicBlur.create(mRenderScript, Element.U8_4(mRenderScript));
+            mScript.setRadius(BLUR_RADIUS);
+            mConfigured = true;
+        } else {
+            mInput.copyFrom(image);
+        }
 
-        script.setInput(input);
-        script.forEach(output);
-        output.copyTo(image);
+        mScript.setInput(mInput);
+        mScript.forEach(mOutput);
+        mOutput.copyTo(image);
 
         return image;
     }
@@ -53,17 +55,17 @@ public class Blur {
         int numPixels = img.getWidth() * img.getHeight();
 
         //Create a Bitmap of the appropriate format.
-        if (tmp == null) {
-            tmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.ARGB_8888);
-            pixels = new int[numPixels];
+        if (mTmp == null) {
+            mTmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.ARGB_8888);
+            mPixels = new int[numPixels];
         }
 
         //Get JPEG pixels.  Each int is the color values for one pixel.
-        img.getPixels(pixels, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
+        img.getPixels(mPixels, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
 
         //Set RGB pixels.
-        tmp.setPixels(pixels, 0, tmp.getWidth(), 0, 0, tmp.getWidth(), tmp.getHeight());
+        mTmp.setPixels(mPixels, 0, mTmp.getWidth(), 0, 0, mTmp.getWidth(), mTmp.getHeight());
 
-        return tmp;
+        return mTmp;
     }
 }

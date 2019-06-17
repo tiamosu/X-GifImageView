@@ -10,17 +10,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.felipecsl.gifimageview.app.utils.ConvertUtils;
 import com.felipecsl.gifimageview.library.GifImageView;
+
+import java.io.InputStream;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
-    private GifImageView gifImageView;
-    private Button btnToggle;
-    private Button btnBlur;
-    private boolean shouldBlur = false;
-    private Blur blur;
+    private GifImageView mGifImageView;
+    private Button mBtnToggle;
+    private Button mBtnBlur;
+    private boolean mShouldBlur = false;
+    private Blur mBlur;
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -28,37 +31,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        gifImageView = findViewById(R.id.gifImageView);
-        btnToggle = findViewById(R.id.btnToggle);
-        btnBlur = findViewById(R.id.btnBlur);
+        mGifImageView = findViewById(R.id.gifImageView);
+        mBtnToggle = findViewById(R.id.btnToggle);
+        mBtnBlur = findViewById(R.id.btnBlur);
         final Button btnClear = findViewById(R.id.btnClear);
 
-        blur = Blur.newInstance(this);
-        gifImageView.setOnFrameAvailable(bitmap -> {
-            if (shouldBlur) {
-                return blur.blur(bitmap);
+        mBlur = Blur.newInstance(this);
+        mGifImageView.setOnFrameAvailable(bitmap -> {
+            if (mShouldBlur) {
+                return mBlur.blur(bitmap);
             }
             return bitmap;
         });
 
-        gifImageView.setOnAnimationStop(() -> runOnUiThread(() ->
+        mGifImageView.setOnAnimationStop(() -> runOnUiThread(() ->
                 Toast.makeText(MainActivity.this, "Animation stopped", Toast.LENGTH_SHORT).show()));
 
-        btnToggle.setOnClickListener(this);
+        mBtnToggle.setOnClickListener(this);
         btnClear.setOnClickListener(this);
-        btnBlur.setOnClickListener(this);
+        mBtnBlur.setOnClickListener(this);
 
-        new GifDataDownloader() {
-            @Override
-            protected void onPostExecute(final byte[] bytes) {
-                gifImageView.setBytes(bytes);
-                gifImageView.startAnimation();
-                Log.d(TAG, "GIF width is " + gifImageView.getGifWidth());
-                Log.d(TAG, "GIF height is " + gifImageView.getGifHeight());
-            }
-        }.execute("http://katemobile.ru/tmp/sample3.gif");
+        final InputStream is = getResources().openRawResource(R.raw.gif);
+        mGifImageView.setBytes(ConvertUtils.inputStream2Bytes(is));
+        mGifImageView.startAnimation();
+        Log.d(TAG, "GIF width is " + mGifImageView.getGifWidth());
+        Log.d(TAG, "GIF height is " + mGifImageView.getGifHeight());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -77,15 +75,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (v.equals(btnToggle)) {
-            if (gifImageView.isAnimating())
-                gifImageView.stopAnimation();
-            else
-                gifImageView.startAnimation();
-        } else if (v.equals(btnBlur)) {
-            shouldBlur = !shouldBlur;
+        if (v.equals(mBtnToggle)) {
+            if (mGifImageView.isAnimating()) {
+                mGifImageView.stopAnimation();
+            } else {
+                mGifImageView.startAnimation();
+            }
+        } else if (v.equals(mBtnBlur)) {
+            mShouldBlur = !mShouldBlur;
         } else {
-            gifImageView.clear();
+            mGifImageView.clear();
         }
     }
 }

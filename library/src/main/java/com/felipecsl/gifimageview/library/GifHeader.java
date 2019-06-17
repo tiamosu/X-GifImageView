@@ -8,49 +8,31 @@ import java.util.List;
  * metadata like width and height that can be used to decode each individual frame of the GIF. Can
  * be shared by one or more {@link GifDecoder}s to play the same animated GIF in multiple views.
  */
+@SuppressWarnings("WeakerAccess")
 public class GifHeader {
-    int[] gct = null;
-    int status = GifDecoder.STATUS_OK;
-    int frameCount = 0;
+    public int[] mGct = null;
+    public int mStatus = GifDecoder.STATUS_OK;
+    public int mFrameCount = 0;
 
-    GifFrame currentFrame;
-    List<GifFrame> frames = new ArrayList<>();
+    public GifFrame mCurrentFrame;
+    public List<GifFrame> mFrames = new ArrayList<>();
     // Logical screen size.
     // Full image width.
-    int width;
+    public int mWidth;
     // Full image height.
-    int height;
+    public int mHeight;
 
     // 1 : global color table flag.
-    boolean gctFlag;
+    public boolean mGctFlag;
     // 2-4 : color resolution.
     // 5 : gct sort flag.
     // 6-8 : gct size.
-    int gctSize;
+    public int mGctSize;
     // Background color index.
-    int bgIndex;
+    public int mBgIndex;
     // Pixel aspect ratio.
-    int pixelAspect;
+    public int mPixelAspect;
     //TODO: this is set both during reading the header and while decoding frames...
-    int bgColor;
-    int loopCount = 0;
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getNumFrames() {
-        return frameCount;
-    }
-
-    /**
-     * Global status code of GIF data parsing.
-     */
-    public int getStatus() {
-        return status;
-    }
+    public int mBgColor;
+    public int mLoopCount = 0;
 }

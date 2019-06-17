@@ -3,34 +3,35 @@ package com.felipecsl.gifimageview.library;
 /**
  * Inner model class housing metadata for each frame.
  */
+@SuppressWarnings("WeakerAccess")
 class GifFrame {
-    int ix, iy, iw, ih;
+    public int mIx, mIy, mIw, mIh;
     /**
      * Control Flag.
      */
-    boolean interlace;
+    public boolean mInterlace;
     /**
      * Control Flag.
      */
-    boolean transparency;
+    public boolean mTransparency;
     /**
      * Disposal Method.
      */
-    int dispose;
+    public int mDispose;
     /**
      * Transparency Index.
      */
-    int transIndex;
+    public int mTransIndex;
     /**
      * Delay, in ms, to next frame.
      */
-    int delay;
+    public int mDelay;
     /**
      * Index in the raw buffer where we need to start reading to decode.
      */
-    int bufferFrameStart;
+    public int mBufferFrameStart;
     /**
      * Local Color Table.
      */
-    int[] lct;
+    public int[] mLct;
 }

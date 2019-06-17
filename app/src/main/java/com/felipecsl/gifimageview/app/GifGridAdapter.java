@@ -14,22 +14,22 @@ import com.felipecsl.gifimageview.library.GifImageView;
 import java.util.List;
 
 public class GifGridAdapter extends BaseAdapter {
-    private final Context context;
-    private final List<String> imageUrls;
+    private final Context mContext;
+    private final List<String> mImageUrls;
 
     public GifGridAdapter(Context context, List<String> imageUrls) {
-        this.context = context;
-        this.imageUrls = imageUrls;
+        this.mContext = context;
+        this.mImageUrls = imageUrls;
     }
 
     @Override
     public int getCount() {
-        return imageUrls.size();
+        return mImageUrls.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return imageUrls.get(position);
+        return mImageUrls.get(position);
     }
 
     @Override
@@ -42,11 +42,11 @@ public class GifGridAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final GifImageView imageView;
         if (convertView == null) {
-            imageView = new GifImageView(context);
+            imageView = new GifImageView(mContext);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
             imageView.setPadding(10, 10, 10, 10);
-            int size = AbsListView.LayoutParams.WRAP_CONTENT;
-            AbsListView.LayoutParams layoutParams = new GridView.LayoutParams(size, size);
+            final int size = AbsListView.LayoutParams.WRAP_CONTENT;
+            final AbsListView.LayoutParams layoutParams = new GridView.LayoutParams(size, size);
             imageView.setLayoutParams(layoutParams);
         } else {
             imageView = (GifImageView) convertView;
@@ -58,7 +58,7 @@ public class GifGridAdapter extends BaseAdapter {
                 imageView.setBytes(bytes);
                 imageView.startAnimation();
             }
-        }.execute(imageUrls.get(position));
+        }.execute(mImageUrls.get(position));
         return imageView;
     }
 }

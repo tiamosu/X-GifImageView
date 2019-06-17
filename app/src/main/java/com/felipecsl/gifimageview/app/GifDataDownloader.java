@@ -10,8 +10,9 @@ public class GifDataDownloader extends AsyncTask<String, Void, byte[]> {
     protected byte[] doInBackground(final String... params) {
         final String gifUrl = params[0];
 
-        if (gifUrl == null)
+        if (gifUrl == null) {
             return null;
+        }
 
         try {
             return ByteArrayHttpClient.get(gifUrl);

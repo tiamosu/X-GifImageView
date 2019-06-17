@@ -11,8 +11,9 @@ import java.util.Arrays;
  * A class responsible for creating {@link GifHeader}s from data
  * representing animated gifs.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GifHeaderParser {
-    public static final String TAG = "GifHeaderParser";
+    private static final String TAG = "GifHeaderParser";
 
     // The minimum frame delay in hundredths of a second.
     static final int MIN_FRAME_DELAY = 2;
@@ -41,7 +42,7 @@ public class GifHeaderParser {
             setData(ByteBuffer.wrap(data));
         } else {
             rawData = null;
-            header.status = GifDecoder.STATUS_OPEN_ERROR;
+            header.mStatus = GifDecoder.STATUS_OPEN_ERROR;
         }
         return this;
     }
@@ -69,11 +70,10 @@ public class GifHeaderParser {
         readHeader();
         if (!err()) {
             readContents();
-            if (header.frameCount < 0) {
-                header.status = GifDecoder.STATUS_FORMAT_ERROR;
+            if (header.mFrameCount < 0) {
+                header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
             }
         }
-
         return header;
     }
 
@@ -86,7 +86,7 @@ public class GifHeaderParser {
         if (!err()) {
             readContents(2 /* maxFrames */);
         }
-        return header.frameCount > 1;
+        return header.mFrameCount > 1;
     }
 
     /**
@@ -102,7 +102,7 @@ public class GifHeaderParser {
     private void readContents(int maxFrames) {
         // Read GIF file content blocks.
         boolean done = false;
-        while (!(done || err() || header.frameCount > maxFrames)) {
+        while (!(done || err() || header.mFrameCount > maxFrames)) {
             int code = read();
             switch (code) {
                 // Image separator.
@@ -112,8 +112,8 @@ public class GifHeaderParser {
                     // exist, there will be a non-null current frame which we should use. However if one
                     // did not exist,
                     // the current frame will be null and we must create it here. See issue #134.
-                    if (header.currentFrame == null) {
-                        header.currentFrame = new GifFrame();
+                    if (header.mCurrentFrame == null) {
+                        header.mCurrentFrame = new GifFrame();
                     }
                     readBitmap();
                     break;
@@ -124,17 +124,17 @@ public class GifHeaderParser {
                         // Graphics control extension.
                         case 0xf9:
                             // Start a new frame.
-                            header.currentFrame = new GifFrame();
+                            header.mCurrentFrame = new GifFrame();
                             readGraphicControlExt();
                             break;
                         // Application extension.
                         case 0xff:
                             readBlock();
-                            String app = "";
+                            final StringBuilder builder = new StringBuilder();
                             for (int i = 0; i < 11; i++) {
-                                app += (char) block[i];
+                                builder.append((char) block[i]);
                             }
-                            if (app.equals("NETSCAPE2.0")) {
+                            if ("NETSCAPE2.0".equals(builder.toString())) {
                                 readNetscapeExt();
                             } else {
                                 // Don't care.
@@ -161,7 +161,7 @@ public class GifHeaderParser {
                 // Bad byte, but keep going and see what happens break;
                 case 0x00:
                 default:
-                    header.status = GifDecoder.STATUS_FORMAT_ERROR;
+                    header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
             }
         }
     }
@@ -173,23 +173,23 @@ public class GifHeaderParser {
         // Block size.
         read();
         // Packed fields.
-        int packed = read();
+        final int packed = read();
         // Disposal method.
-        header.currentFrame.dispose = (packed & 0x1c) >> 2;
-        if (header.currentFrame.dispose == 0) {
+        header.mCurrentFrame.mDispose = (packed & 0x1c) >> 2;
+        if (header.mCurrentFrame.mDispose == 0) {
             // Elect to keep old image if discretionary.
-            header.currentFrame.dispose = 1;
+            header.mCurrentFrame.mDispose = 1;
         }
-        header.currentFrame.transparency = (packed & 1) != 0;
+        header.mCurrentFrame.mTransparency = (packed & 1) != 0;
         // Delay in milliseconds.
         int delayInHundredthsOfASecond = readShort();
         // TODO: consider allowing -1 to indicate show forever.
         if (delayInHundredthsOfASecond < MIN_FRAME_DELAY) {
             delayInHundredthsOfASecond = DEFAULT_FRAME_DELAY;
         }
-        header.currentFrame.delay = delayInHundredthsOfASecond * 10;
+        header.mCurrentFrame.mDelay = delayInHundredthsOfASecond * 10;
         // Transparent color index
-        header.currentFrame.transIndex = read();
+        header.mCurrentFrame.mTransIndex = read();
         // Block terminator
         read();
     }
@@ -199,29 +199,29 @@ public class GifHeaderParser {
      */
     private void readBitmap() {
         // (sub)image position & size.
-        header.currentFrame.ix = readShort();
-        header.currentFrame.iy = readShort();
-        header.currentFrame.iw = readShort();
-        header.currentFrame.ih = readShort();
+        header.mCurrentFrame.mIx = readShort();
+        header.mCurrentFrame.mIy = readShort();
+        header.mCurrentFrame.mIw = readShort();
+        header.mCurrentFrame.mIh = readShort();
 
-        int packed = read();
+        final int packed = read();
         // 1 - local color table flag interlace
-        boolean lctFlag = (packed & 0x80) != 0;
-        int lctSize = (int) Math.pow(2, (packed & 0x07) + 1);
+        final boolean lctFlag = (packed & 0x80) != 0;
+        final int lctSize = (int) Math.pow(2, (packed & 0x07) + 1);
         // 3 - sort flag
         // 4-5 - reserved lctSize = 2 << (packed & 7); // 6-8 - local color
         // table size
-        header.currentFrame.interlace = (packed & 0x40) != 0;
+        header.mCurrentFrame.mInterlace = (packed & 0x40) != 0;
         if (lctFlag) {
             // Read table.
-            header.currentFrame.lct = readColorTable(lctSize);
+            header.mCurrentFrame.mLct = readColorTable(lctSize);
         } else {
             // No local color table.
-            header.currentFrame.lct = null;
+            header.mCurrentFrame.mLct = null;
         }
 
         // Save this as the decoding position pointer.
-        header.currentFrame.bufferFrameStart = rawData.position();
+        header.mCurrentFrame.mBufferFrameStart = rawData.position();
 
         // False decode pixel data to advance buffer.
         skipImageData();
@@ -230,9 +230,9 @@ public class GifHeaderParser {
             return;
         }
 
-        header.frameCount++;
+        header.mFrameCount++;
         // Add image to frame.
-        header.frames.add(header.currentFrame);
+        header.mFrames.add(header.mCurrentFrame);
     }
 
     /**
@@ -243,33 +243,32 @@ public class GifHeaderParser {
             readBlock();
             if (block[0] == 1) {
                 // Loop count sub-block.
-                int b1 = ((int) block[1]) & 0xff;
-                int b2 = ((int) block[2]) & 0xff;
-                header.loopCount = (b2 << 8) | b1;
-                if (header.loopCount == 0) {
-                    header.loopCount = GifDecoder.LOOP_FOREVER;
+                final int b1 = ((int) block[1]) & 0xff;
+                final int b2 = ((int) block[2]) & 0xff;
+                header.mLoopCount = (b2 << 8) | b1;
+                if (header.mLoopCount == 0) {
+                    header.mLoopCount = GifDecoder.LOOP_FOREVER;
                 }
             }
         } while ((blockSize > 0) && !err());
     }
 
-
     /**
      * Reads GIF file header information.
      */
     private void readHeader() {
-        String id = "";
+        final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            id += (char) read();
+            builder.append((char) read());
         }
-        if (!id.startsWith("GIF")) {
-            header.status = GifDecoder.STATUS_FORMAT_ERROR;
+        if (!builder.toString().startsWith("GIF")) {
+            header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
             return;
         }
         readLSD();
-        if (header.gctFlag && !err()) {
-            header.gct = readColorTable(header.gctSize);
-            header.bgColor = header.gct[header.bgIndex];
+        if (header.mGctFlag && !err()) {
+            header.mGct = readColorTable(header.mGctSize);
+            header.mBgColor = header.mGct[header.mBgIndex];
         }
     }
 
@@ -278,42 +277,41 @@ public class GifHeaderParser {
      */
     private void readLSD() {
         // Logical screen size.
-        header.width = readShort();
-        header.height = readShort();
+        header.mWidth = readShort();
+        header.mHeight = readShort();
         // Packed fields
         int packed = read();
         // 1 : global color table flag.
-        header.gctFlag = (packed & 0x80) != 0;
+        header.mGctFlag = (packed & 0x80) != 0;
         // 2-4 : color resolution.
         // 5 : gct sort flag.
         // 6-8 : gct size.
-        header.gctSize = 2 << (packed & 7);
+        header.mGctSize = 2 << (packed & 7);
         // Background color index.
-        header.bgIndex = read();
+        header.mBgIndex = read();
         // Pixel aspect ratio
-        header.pixelAspect = read();
+        header.mPixelAspect = read();
     }
 
     /**
      * Reads color table as 256 RGB integer values.
      *
-     * @param ncolors int number of colors to read.
+     * @param colors int number of colors to read.
      * @return int array containing 256 colors (packed ARGB with full alpha).
      */
-    private int[] readColorTable(int ncolors) {
-        int nbytes = 3 * ncolors;
+    private int[] readColorTable(int colors) {
+        final int bytes = 3 * colors;
+        final byte[] c = new byte[bytes];
         int[] tab = null;
-        byte[] c = new byte[nbytes];
 
         try {
             rawData.get(c);
-
             // TODO: what bounds checks are we avoiding if we know the number of colors?
             // Max size to avoid bounds checks.
             tab = new int[MAX_BLOCK_SIZE];
             int i = 0;
             int j = 0;
-            while (i < ncolors) {
+            while (i < colors) {
                 int r = ((int) c[j++]) & 0xff;
                 int g = ((int) c[j++]) & 0xff;
                 int b = ((int) c[j++]) & 0xff;
@@ -323,9 +321,8 @@ public class GifHeaderParser {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "Format Error Reading Color Table", e);
             }
-            header.status = GifDecoder.STATUS_FORMAT_ERROR;
+            header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
         }
-
         return tab;
     }
 
@@ -349,7 +346,7 @@ public class GifHeaderParser {
                 blockSize = read();
                 rawData.position(rawData.position() + blockSize);
             } while (blockSize > 0);
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
@@ -372,10 +369,10 @@ public class GifHeaderParser {
                 }
             } catch (Exception e) {
                 if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG,
-                            "Error Reading Block n: " + n + " count: " + count + " blockSize: " + blockSize, e);
+                    Log.d(TAG, "Error Reading Block n: " + n
+                            + " count: " + count + " blockSize: " + blockSize, e);
                 }
-                header.status = GifDecoder.STATUS_FORMAT_ERROR;
+                header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
             }
         }
         return n;
@@ -389,7 +386,7 @@ public class GifHeaderParser {
         try {
             curByte = rawData.get() & 0xFF;
         } catch (Exception e) {
-            header.status = GifDecoder.STATUS_FORMAT_ERROR;
+            header.mStatus = GifDecoder.STATUS_FORMAT_ERROR;
         }
         return curByte;
     }
@@ -403,6 +400,6 @@ public class GifHeaderParser {
     }
 
     private boolean err() {
-        return header.status != GifDecoder.STATUS_OK;
+        return header.mStatus != GifDecoder.STATUS_OK;
     }
 }
