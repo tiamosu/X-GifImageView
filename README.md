@@ -2,7 +2,7 @@
 
 Android ImageView that handles Animated GIF images
 
-[ ![Download](https://api.bintray.com/packages/weixia/maven/X-gifimageview/images/download.svg) ](https://bintray.com/weixia/maven/X-gifimageview/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/weixia/maven/x-gifimageview/images/download.svg) ](https://bintray.com/weixia/maven/x-gifimageview/_latestVersion)
 
 ### Usage
 
