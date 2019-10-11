@@ -10,7 +10,7 @@ In your ``build.gradle`` file:
 
 ```groovy
 dependencies {
-  compile 'me.xia:x-gifimageview:1.0.2'
+  implementation 'me.xia:x-gifimageview:1.0.2'
 }
 ```
 
