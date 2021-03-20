@@ -1,12 +1,19 @@
-apply plugin: 'com.android.application'
+apply {
+    plugin "com.android.application"
+    plugin "kotlin-android"
+    plugin "kotlin-parcelize"
+    plugin "kotlin-kapt"
+}
 
 android {
-    compileSdkVersion compile_sdk_version
+    flavorDimensions "define"
+    compileSdkVersion Android.compileSdkVersion
     defaultConfig {
-        minSdkVersion min_sdk_version
-        targetSdkVersion target_sdk_version
-        versionCode version_code
-        versionName version_name
+        applicationId "com.felipecsl.gifimageview.app"
+        minSdkVersion Android.minSdkVersion
+        targetSdkVersion Android.targetSdkVersion
+        versionCode Android.versionCode
+        versionName Android.versionName
 
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
@@ -17,21 +24,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/*'
+        exclude 'LICENSE.txt'
+    }
     lintOptions {
+        checkReleaseBuilds false
         abortOnError false
-        ignoreWarnings true
-        disable 'InvalidPackage'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
-    api project(':library')
+    implementation project(':library')
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
-    implementation 'commons-io:commons-io:2.6'
+    implementation Deps.androidx_appcompat
+    implementation Deps.okhttp3
+    implementation Deps.commons_io
 }
