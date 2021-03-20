@@ -1,9 +1,8 @@
-### GifImageView
-[![](https://jitpack.io/v/tiamosu/X-GifImageView.svg)](https://jitpack.io/#tiamosu/X-GifImageView)
+# GifImageView
+## 本项目fork自([felipecsl/GifImageView](https://github.com/felipecsl/GifImageView))
 
-```groovy
-implementation 'com.github.tiamosu:X-GifImageView:1.0.4'
-```
+## Download
+[![](https://jitpack.io/v/tiamosu/X-GifImageView.svg)](https://jitpack.io/#tiamosu/X-GifImageView)
 
 ```groovy
 allprojects {
@@ -14,3 +13,10 @@ allprojects {
     }
 }
 ```
+
+``` groovy
+implementation 'com.github.tiamosu:X-GifImageView:1.0.4'
+```
+
+## 感谢原作者的贡献
+
